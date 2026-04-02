@@ -10,6 +10,13 @@ Get G employed before May 20, 2026 (Outlier AI shutdown). Target: higher-leverag
 - **Financial situation:** Wife covering bills, zero personal runway
 - **Urgency level:** CRITICAL — no buffer, must execute with precision. *All blocking items for job search resolved as of March 27, 2026.*
 
+## Execution status [updated 2026-04-02]
+- **Batch 1 (April 1–2):** ✅ COMPLETE — 5 companies targeted (Concentric, Impello, Tesoro, KBI Biopharma, Think Bioscience)
+  - All sent via Gmail API through Maton oauth-gateway
+  - Timestamps + email IDs logged in OUTREACH_LOG.md
+- **Batch 2 (launch April 7):** 15 companies ready, targeting 3–5 additional sends before deadline
+- **Interview pipeline:** Open, monitoring for responses (expect 5–7 day lag)
+
 ---
 
 ## Target sectors (ranked by fit)

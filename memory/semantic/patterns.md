@@ -36,3 +36,31 @@ Recurring patterns, reliable heuristics, and compressed wisdom from experience.
 - Sonnet: main session work, moderate complexity
 - Opus: foundational architecture decisions, novel code, anything that runs unsupervised at scale
 - Never use Haiku to build the infrastructure Haiku will run on
+
+---
+
+## G's Intellectual Architecture (from archive analysis, 2026-04-02)
+
+**Core stance:** Falsificationist + Architect
+- Tests by building; refines through implementation
+- Skeptical of consensus, drawn to falsifiable hypotheses
+- Convergence thinker: most excited at field intersections
+
+**Five convergence stacks (primary research focus areas):**
+1. Physics → Energy → Compute
+2. Crypto → Quantum (cryptography)
+3. BioTech → Information Theory
+4. AI → Substrate (hardware, wetware)
+5. Markets → Macro (on-chain intelligence)
+
+**Civilizational Stack thesis:**
+- Verifiable compute (ZK, post-quantum crypto)
+- Biological manufacture (SynBio, CRISPR, cell-free systems)
+- Autonomous AI (agentic economy, coordination)
+- Distributed networks (decentralization, self-custody)
+
+**Career narrative (corrected 2026-04-02):**
+- Systems architect for next-gen biotech, not "cannabis ops person"
+- 10 years cannabis → proof of concept for ops sophistication
+- Outlier AI role → AI training (reasoning rubrics) + intelligence gathering for SynBio transition
+- Batch 1 job search targeting: Tier 1 Agriculture Biotech + Synthetic Biology companies in Colorado hub

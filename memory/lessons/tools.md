@@ -12,6 +12,7 @@
 - Use explicit binary paths when diagnosing version/path conflicts
 - Use cron JSON/list output to inspect live job definitions rather than inferring from session artifacts
 - Use layered files for memory rather than overloading `MEMORY.md`
+- LCM tools (lcm_grep, lcm_describe) require conversationId or allConversations=true; context-less calls fail silently
 
 ## Friction points
 - Old and new OpenClaw installs can coexist and create misleading diagnostics
