@@ -1,0 +1,68 @@
+version: '3.8'
+
+services:
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: memory-qdrant
+    restart: unless-stopped
+    
+    volumes:
+      # Persistent storage for vector data
+      - qdrant_storage:/qdrant/storage
+    
+    ports:
+      # Expose Qdrant API (HTTP + gRPC)
+      - "6333:6333"  # HTTP API
+      - "6334:6334"  # gRPC (optional, can remove if not needed)
+    
+    environment:
+      # Optional: Set Qdrant API key for auth
+      # QDRANT__SERVICE__API_KEY: "your-api-key-here"
+      
+      # Performance tuning
+      QDRANT__SERVICE__HTTP_PORT: 6333
+      QDRANT__SERVICE__GRPC_PORT: 6334
+    
+    networks:
+      - traefik_proxy
+    
+    labels:
+      # Traefik configuration
+      - "traefik.enable=true"
+      - "traefik.http.routers.qdrant.rule=Host(`qdrant.trident-memory.com`)"
+      - "traefik.http.routers.qdrant.entrypoints=websecure"
+      - "traefik.http.routers.qdrant.tls.certresolver=letsencrypt"
+      - "traefik.http.services.qdrant.loadbalancer.server.port=6333"
+      
+      # Optional: HTTP Basic Auth (uncomment and configure if needed)
+      # - "traefik.http.routers.qdrant.middlewares=qdrant-auth"
+      # - "traefik.http.middlewares.qdrant-auth.basicauth.users=user:$$apr1$$hashedpassword"
+
+volumes:
+  qdrant_storage:
+    driver: local
+
+networks:
+  traefik_proxy:
+    external: true
+
+# DEPLOYMENT INSTRUCTIONS (Hostinger UI):
+#
+# 1. Create new project: "memory-qdrant"
+# 2. Upload this file as docker-compose.yml
+# 3. Subdomain configured: qdrant.trident-memory.com
+# 4. Network configured: traefik_proxy
+# 5. (Optional) Set QDRANT__SERVICE__API_KEY in environment for authentication
+# 6. Deploy via Hostinger UI
+# 7. Verify: https://qdrant.trident-memory.com/dashboard
+#
+# CONNECT FROM OPENCLAW CONTAINER:
+#
+# HTTP API endpoint: https://qdrant.trident-memory.com
+# Or internal Docker network: http://memory-qdrant:6333
+#
+# Python example:
+# from qdrant_client import QdrantClient
+# client = QdrantClient(url="https://qdrant.trident-memory.com")
+# # Or with API key:
+# # client = QdrantClient(url="https://qdrant.trident-memory.com", api_key="your-key")

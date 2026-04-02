@@ -1,0 +1,85 @@
+version: '3.8'
+
+services:
+  falkordb:
+    image: falkordb/falkordb:latest
+    container_name: memory-falkordb
+    restart: unless-stopped
+    
+    volumes:
+      # Persistent storage for graph data
+      - falkordb_data:/data
+    
+    ports:
+      # Expose FalkorDB Redis-compatible port
+      - "6379:6379"
+    
+    environment:
+      # Optional: Set password for Redis protocol
+      # FALKORDB_PASSWORD: "your-password-here"
+      
+      # Performance tuning (adjust based on VPS resources)
+      FALKORDB_ARGS: "--save 60 1 --loglevel warning"
+    
+    networks:
+      - traefik_proxy
+    
+    labels:
+      # Traefik configuration
+      - "traefik.enable=true"
+      - "traefik.tcp.routers.falkordb.rule=HostSNI(`*`)"
+      - "traefik.tcp.routers.falkordb.entrypoints=falkordb"
+      - "traefik.tcp.routers.falkordb.service=falkordb"
+      - "traefik.tcp.services.falkordb.loadbalancer.server.port=6379"
+      
+      # Note: FalkorDB uses Redis protocol (TCP), not HTTP
+      # SSL/TLS termination for Redis requires Traefik TCP router config
+      # For simplicity, recommend internal Docker network access only
+
+volumes:
+  falkordb_data:
+    driver: local
+
+networks:
+  traefik_proxy:
+    external: true
+
+# DEPLOYMENT INSTRUCTIONS (Hostinger UI):
+#
+# 1. Create new project: "memory-falkordb"
+# 2. Upload this file as docker-compose.yml
+# 3. Network configured: traefik_proxy
+# 4. (Optional) Set FALKORDB_PASSWORD in environment for authentication
+# 5. Deploy via Hostinger UI
+#
+# IMPORTANT: FalkorDB uses Redis protocol (TCP port 6379), NOT HTTP.
+# Traefik HTTP routing won't work. Options:
+#
+# Option A (Recommended): Access via internal Docker network
+#   - Connection string: redis://memory-falkordb:6379
+#   - No Traefik routing needed
+#   - OpenClaw container connects directly via Docker network
+#
+# Option B: Expose via Traefik TCP router
+#   - Requires Traefik static config changes (add TCP entrypoint)
+#   - More complex, not recommended unless external access required
+#
+# CONNECT FROM OPENCLAW CONTAINER:
+#
+# Connection: redis://memory-falkordb:6379
+# (Or with password: redis://:password@memory-falkordb:6379)
+#
+# Python example (using Graphiti library):
+# from graphiti_core import Graphiti
+# graphiti = Graphiti(
+#     redis_url="redis://memory-falkordb:6379",
+#     # Add password if set: redis_password="your-password"
+# )
+#
+# ALTERNATIVE: If you need HTTP access, consider RedisInsight or similar web UI
+# as a separate container with HTTP Traefik routing.
+
+# NOTA BENE:
+# FalkorDB is Redis-compatible. If you prefer pure graph semantics,
+# consider Neo4j instead (has native HTTP API, easier Traefik integration).
+# However, FalkorDB is lighter and Redis protocol is well-supported.
