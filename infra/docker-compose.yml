@@ -1,0 +1,112 @@
+# Docker Compose Configuration
+# BACKUP LOCATION: ShivaClaw/shiva-infra
+# Last backed up: 2026-04-02T00:15:00Z
+#
+# NOTE: This is a TEMPLATE. The actual docker-compose.yml is stored on the host VPS.
+# When creating a new VPS, use this as reference and update:
+# - Image tags (pull latest compatible versions)
+# - Network references (traefik_proxy configuration)
+# - Volume mounts (adjust paths for new VPS)
+# - Environment variables (source from TOKENS&KEYS spreadsheet)
+#
+# To get the current live version, SSH to the VPS and run:
+#   docker-compose config
+#
+# Services in this stack:
+# - openclaw (main gateway + chat API)
+# - traefik (reverse proxy + Let's Encrypt)
+# - qdrant (vector database for memory search)
+# - falkordb (graph database for entity relationships)
+# - (others as needed)
+
+version: '3.8'
+
+services:
+  openclaw:
+    image: openclaw:latest
+    container_name: openclaw
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8080:8080"
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+      - MATON_API_KEY=${MATON_API_KEY}
+      - HOSTINGER_API_TOKEN=${HOSTINGER_API_TOKEN}
+    volumes:
+      - /data/.openclaw:/root/.openclaw
+      - /data/.openclaw/workspace:/workspace
+    networks:
+      - traefik_proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.openclaw.rule=Host(`openclaw.trident-memory.com`)"
+      - "traefik.http.routers.openclaw.entrypoints=websecure"
+      - "traefik.http.routers.openclaw.tls.certresolver=letsencrypt"
+
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: memory-qdrant
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:6333:6333"
+    volumes:
+      - /data/qdrant:/qdrant/storage
+    networks:
+      - traefik_proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.qdrant.rule=Host(`qdrant.trident-memory.com`)"
+      - "traefik.http.routers.qdrant.entrypoints=websecure"
+      - "traefik.http.routers.qdrant.tls.certresolver=letsencrypt"
+
+  falkordb:
+    image: falkordb/falkordb:latest
+    container_name: memory-falkordb
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:6379:6379"
+    volumes:
+      - /data/falkordb:/data
+    networks:
+      - traefik_proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.tcp.routers.falkordb.rule=HostSNI(`falkordb.trident-memory.com`)"
+      - "traefik.tcp.routers.falkordb.entrypoints=tcpsecure"
+      - "traefik.tcp.routers.falkordb.tls.certresolver=letsencrypt"
+
+  traefik:
+    image: traefik:latest
+    container_name: traefik
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /data/traefik:/traefik
+    command:
+      - "--api.insecure=false"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--certificatesresolvers.letsencrypt.acme.httpchallenge=true"
+      - "--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web"
+      - "--certificatesresolvers.letsencrypt.acme.email=brandongkirksey@gmail.com"
+      - "--certificatesresolvers.letsencrypt.acme.storage=/traefik/acme.json"
+    networks:
+      - traefik_proxy
+
+networks:
+  traefik_proxy:
+    driver: bridge
+
+# Recovery instructions:
+# 1. Set environment variables from TOKENS&KEYS spreadsheet
+# 2. Run: docker-compose pull
+# 3. Run: docker-compose up -d
+# 4. Verify: docker-compose ps
+# 5. Check logs: docker logs -f openclaw
