@@ -243,7 +243,7 @@ docker-compose ps
 
 **HOSTINGER_API_TOKEN:** Stored in `/data/.openclaw/workspace/memory/infra/HOSTINGER_CREDENTIALS.enc` (do not share)
 
-**Hostinger VPS ID:** (to be filled in by G from hPanel)  
+**Hostinger VPS ID:** `1489775` ✅  
 **VPS hostname:** openclaw.trident-memory.com (planned)  
 **Hostinger account email:** brandongkirksey@gmail.com  
 **GitHub repos:**  
