@@ -9,6 +9,51 @@ If yes to any → flag it. Do not wait for the morning briefing.
 
 ---
 
+## 🤖 Subagent Lifecycle Check (NEW — every heartbeat)
+Run before other checks. Kill idle/completed agents, consolidate redundant ones, optimize models.
+See details below.
+
+---
+
+## 🤖 Subagent Lifecycle (always)
+
+**Goal:** Prevent token waste on abandoned or inefficient subagents.
+
+**Process:**
+1. Run `subagents list` to see all running agents
+2. For each agent:
+   - Pull recent chat history via `sessions_history`
+   - Check status (stuck, completed, running, error)
+   - If completed/error/abandoned: `subagents kill` with reason
+   - If running: verify task is still needed and on-track
+   - Review last few messages to extract important memories → write to daily log
+3. Consolidation opportunities:
+   - If 2+ agents are doing the same task → kill redundant ones, steer primary to absorb work
+   - If agent is idling (no activity >30 min) → kill unless it's intentionally waiting
+4. Model optimization:
+   - Check which model each agent is using
+   - If using Sonnet for simple tasks → consider switching to Haiku via `subagents steer`
+   - If using Haiku for reasoning work → escalate to Sonnet
+
+**Examples of agents to kill:**
+- Completed tasks (research finished, file written, etc.)
+- Stuck agents (last message >2 hours old with no progress)
+- Redundant agents (two doing the same research)
+- Over-provisioned agents (Sonnet running a simple file copy)
+
+**Examples of agents to keep:**
+- Long-running research sprints (intentionally patient)
+- Waiting for external input (e.g., waiting for webhook)
+- Background tasks with clear deadlines
+- Memory consolidation agents with specific purposes
+
+**Reporting:**
+- If all agents are optimized: skip reporting (silent success)
+- If agents were killed: log to daily under `## Subagent housekeeping`
+- If model switches made: log changes
+
+---
+
 ## 📈 Active trading (if trading hours)
 If the current time is between 6:00 AM and 4:00 PM MDT on a weekday:
 
