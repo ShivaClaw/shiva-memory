@@ -1,9 +1,9 @@
 ---
-name: trident-memory
+name: project-trident
 description: Three-tier persistent memory architecture for OpenClaw agents. Implements LCM-backed durability (Phase 1), hierarchical .md buckets (Phase 2), agentic signal routing (Phase 5), and cloud+local backup (Phase 7). Designed for autonomous agents needing continuity, identity development, and offline resilience. Solves "blank spots" problem where events fail to be captured in short-term memory.
 ---
 
-# Trident Memory: Three-Tier Persistent Architecture
+# Project Trident: Three-Tier Persistent Memory Architecture
 
 **Problem:** OpenClaw agents lose context between sessions. Default memory is shallow, fragile, and doesn't support autonomous growth or offline operation.
 
