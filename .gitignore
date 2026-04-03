@@ -11,6 +11,7 @@
 !/memory/
 !/infra/
 !/project-trident/
+!/scripts/
 !/ai-selector.sh
 memory/working-buffer.md
 memory/layer0/last-run.md
