@@ -87,15 +87,18 @@ Get G employed before May 20, 2026 (Outlier AI shutdown). Target: higher-leverag
 
 ---
 
-## Current state (as of March 27)
+## Current state [updated 2026-04-03]
 - Sectors researched and prioritized
 - Cold outreach template drafted
 - Prospect list built (40+ companies)
-- *All blocking items resolved; the 58-day cold outreach sprint has officially begun.*
+- Batch 1 (5 companies) sent April 1–2 via Gmail API
+- **⚠️ CRITICAL BLOCKER [2026-04-02]:** Gmail OAuth token (Maton/gog) REVOKED. Blocks email monitoring for responses. Status: requires re-auth or fallback to himalaya (IMAP).
+- **Action needed:** Restore email monitoring capability before Batch 2 (scheduled April 7).
 
 ## Next steps
-- Begin cold outreach to top 5–7 Tier 1 companies immediately.
-- Continue refining prospect list and outreach strategy.
+- **URGENT:** Remediate Gmail monitoring (re-auth Maton or switch to himalaya IMAP).
+- Begin Batch 2 outreach (April 7) once monitoring restored.
+- Continue monitoring interview pipeline from Batch 1.
 
 ## Unresolved questions
 - What is the best framing to position the cannabis → biotech pivot without triggering stigma?
