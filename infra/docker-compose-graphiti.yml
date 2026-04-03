@@ -1,0 +1,112 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Graphiti MCP — Trident Phase 8b
+# Entity graph server backed by FalkorDB, exposed via Traefik.
+#
+# Prerequisites (must already be running):
+#   - traefik        (traefik_proxy network must exist)
+#   - memory-falkordb (container on traefik_proxy, Bolt on :7687)
+#   - memory-qdrant  (container on traefik_proxy, REST on :6333)
+#
+# Deploy:
+#   docker compose -f docker-compose-graphiti.yml up -d
+#
+# Or directly from GitHub (raw URL):
+#   docker compose \
+#     -f https://raw.githubusercontent.com/ShivaClaw/shiva-infra/main/docker-compose-graphiti.yml \
+#     up -d
+#
+# Required env vars (set in shell or .env file beside this compose):
+#   OPENAI_API_KEY
+#
+# Optional env vars:
+#   GRAPHITI_DOMAIN   (default: graphiti.clawofshiva.tech)
+#   GRAPHITI_PORT     (default: 8000, internal only — Traefik handles external)
+# ─────────────────────────────────────────────────────────────────────────────
+
+services:
+
+  graphiti:
+    image: zepai/graphiti-mcp:latest
+    container_name: memory-graphiti
+    restart: unless-stopped
+
+    environment:
+      # ── OpenAI (required for entity extraction + embeddings) ──────────────
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+
+      # ── FalkorDB connection ───────────────────────────────────────────────
+      # Uses Graphiti's FalkorDB-native driver (Redis protocol on :6379).
+      # No Bolt/7687 needed — memory-falkordb runs Redis-compatible only.
+      GRAPH_DRIVER:   falkordb
+      FALKORDB_HOST:  memory-falkordb
+      FALKORDB_PORT:  "6379"
+      # NEO4J_URI kept for Graphiti compat shim (some versions require it)
+      NEO4J_URI:      redis://memory-falkordb:6379
+      NEO4J_USER:     ""
+      NEO4J_PASSWORD: ""
+
+      # ── Graphiti tuning ───────────────────────────────────────────────────
+      GRAPHITI_LOG_LEVEL: INFO
+
+    volumes:
+      # Graphiti persists episode state locally between restarts
+      - graphiti_data:/app/data
+
+    networks:
+      - traefik_proxy
+
+    labels:
+      # ── Traefik HTTPS routing ─────────────────────────────────────────────
+      - "traefik.enable=true"
+      - "traefik.http.routers.graphiti.rule=Host(`${GRAPHITI_DOMAIN:-graphiti.clawofshiva.tech}`)"
+      - "traefik.http.routers.graphiti.entrypoints=websecure"
+      - "traefik.http.routers.graphiti.tls.certresolver=letsencrypt"
+      - "traefik.http.services.graphiti.loadbalancer.server.port=${GRAPHITI_PORT:-8000}"
+
+      # ── Basic auth middleware (recommended — MCP has no built-in auth) ────
+      # Uncomment after creating the secret:
+      #   echo $(htpasswd -nb admin YOUR_PASSWORD) | \
+      #     docker secret create graphiti_auth -
+      # - "traefik.http.routers.graphiti.middlewares=graphiti-auth"
+      # - "traefik.http.middlewares.graphiti-auth.basicauth.usersfile=/run/secrets/graphiti_auth"
+
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:${GRAPHITI_PORT:-8000}/healthz"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+
+    depends_on: []
+    # Note: depends_on only works for services in *this* compose file.
+    # memory-falkordb and memory-qdrant are external — ensure they're up first.
+
+volumes:
+  graphiti_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /data/graphiti
+
+networks:
+  traefik_proxy:
+    external: true   # Must already exist (created by main docker-compose.yml)
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Post-deploy verification:
+#
+#   docker logs -f memory-graphiti
+#   curl https://graphiti.clawofshiva.tech/healthz
+#   curl https://graphiti.clawofshiva.tech/mcp/
+#
+# MCP endpoint for OpenClaw / mcporter:
+#   https://graphiti.clawofshiva.tech/mcp/
+#
+# FalkorDB check (from VPS host):
+#   docker exec memory-falkordb redis-cli -p 6379 ping
+#   docker exec memory-falkordb redis-cli -p 6379 GRAPH.LIST
+#
+# Note: FalkorDB is Redis-native (no Bolt/7687). Graphiti uses GRAPH_DRIVER=falkordb
+# to connect via Redis protocol on :6379. This is the correct config for this stack.
+# ─────────────────────────────────────────────────────────────────────────────
