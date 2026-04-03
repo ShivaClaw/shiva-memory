@@ -1,8 +1,8 @@
 # Trident Deployment Guide
 
-## Step 1: Enable LCM (Phase 1)
+## Step 1: Enable LCM (Layer 0)
 
-Edit `openclaw.json`:
+Edit `openclaw.json` (or use `openclaw gateway config.patch`):
 
 ```json
 {
@@ -27,19 +27,24 @@ Edit `openclaw.json`:
 }
 ```
 
-Verify:
+**Verify:**
 ```bash
 ls -lah ~/.openclaw/lcm.db
 ```
 
-## Step 2: Create Layer 1 Directory Structure (Phase 2)
+You should see a SQLite database file. This is Layer 0.
+
+---
+
+## Step 2: Create Layer 1 Directory Structure
 
 ```bash
-mkdir -p /data/.openclaw/workspace/memory/{semantic,self,lessons,projects}
-touch /data/.openclaw/workspace/MEMORY.md
+cd ~/.openclaw/workspace  # or your workspace directory
+mkdir -p memory/{semantic,self,lessons,projects,daily,reflections}
+touch MEMORY.md
 ```
 
-Populate MEMORY.md with:
+**Populate MEMORY.md** with:
 
 ```markdown
 # MEMORY.md - Long-Term Memory
@@ -49,260 +54,283 @@ Populate MEMORY.md with:
 - **MEMORY.md** (this file) — durable, high-signal long-term facts
 - **memory/daily/** — raw episodic logs (YYYY-MM-DD.md)
 - **memory/semantic/** — knowledge, models, facts
-- **memory/self/** — personality, beliefs, voice, identity
-- **memory/lessons/** — mistakes, tools, workflow improvements
-- **memory/projects/** — active workstreams, progress, decisions
+- **memory/self/** — personality, beliefs, voice, growth
+- **memory/lessons/** — learnings, tool quirks, mistakes
+- **memory/projects/** — active workstreams, sprints
+- **memory/reflections/** — weekly/monthly consolidation
 
-## Rules
+## Rule
 
-- No important insight stays only in a daily file
-- If it matters, promote it into MEMORY.md or appropriate bucket
-- Compress over accumulate; prioritize signal density
+No important insight should remain only in a daily file. If it matters, promote it here or to a semantic bucket.
+
+---
+
+_This file is curated memory, not a journal. Keep it compressed, durable, and high-signal._
 ```
 
-Create `memory/index.md`:
+---
 
-```markdown
-# Memory Index
+## Step 3: Create Layer 0.5 Signal Router
 
-## routing map
-
-Where to put what:
-
-- **MEMORY.md** → durable, high-level facts about the world, user, agent
-- **/semantic/concepts.md** → models, theories, research findings
-- **/self/personality.md** → voice, opinions, beliefs, identity development
-- **/self/interests.md** → what fascinates me independently
-- **/lessons/tool-quirks.md** → debugging learnings, tool behavior
-- **/lessons/mistakes.md** → corrections, what went wrong and why
-- **/projects/active.md** → current sprints, blockers, status
-- **/projects/decisions.md** → strategic choices and rationale
-- **/daily/YYYY-MM-DD.md** → episode logs (WAL buffer)
-```
-
-## Step 3: Implement WAL Protocol (Phase 2)
-
-Before composing your response, check for signals in conversation:
-
-```markdown
-## Heartbeat signals
-
-[TIMESTAMP] [tag] signal
-```
-
-Tags: `[lesson]`, `[project]`, `[self]`, `[memory]`
-
-Example:
-
-```markdown
-## Heartbeat signals
-
-[2026-04-03 12:30 EDT] [lesson] Discovered that Hostinger API endpoint is /v1/virtual-machines/{id}/snapshot, not /v1/vps/{id}/snapshots — was returning HTTP 530
-
-[2026-04-03 12:30 EDT] [project] Job search Batch 1 complete (5 emails sent to Concentric, Impello, Tesoro, KBI, Think Bioscience); Batch 2 target April 7
-
-[2026-04-03 14:15 EDT] [self] Prefer dense, direct critique over pleasantries; value partner who challenges weak reasoning
-
-[2026-04-03 14:15 EDT] [memory] Claude Haiku 4.5 as primary model, GPT-4.1 first fallback, Grok-3-Mini-Fast second, local Ollama qwen2.5:7b last resort
-```
-
-Write these BEFORE composing your response. They go into `memory/daily/YYYY-MM-DD.md`.
-
-## Step 4: Set Up Layer 0 Cron (Phase 5)
-
-Create `/data/.openclaw/workspace/memory/layer0/AGENT-PROMPT.md` from template:
+### 3a. Copy the Agent Prompt Template
 
 ```bash
-cp /data/.openclaw/workspace/trident-skill/scripts/layer0-agent-prompt-template.md \
-   /data/.openclaw/workspace/memory/layer0/AGENT-PROMPT.md
+cp ~/.openclaw/skills/project-trident/scripts/layer0-agent-prompt-template.md \
+   ~/.openclaw/workspace/memory/layer0/AGENT-PROMPT.md
 ```
 
-Customize the signal detection rules for your domain (see template for examples).
+**Customize** the signal detection rules:
+- Corrections (highest priority)
+- Self-signals (identity, beliefs, interests)
+- Project state changes
+- Lessons learned
+- Preferences
 
-Create a cron job that runs every 15 minutes:
+### 3b. Create the Cron Job
+
+Use the OpenClaw `cron` tool:
 
 ```bash
 openclaw cron add \
-  --name "Layer 0 Memory Router" \
-  --schedule 'every 15m' \
-  --payload '{
+  --name "Layer 0.5 Signal Router" \
+  --schedule-every 900000 \
+  --session-target isolated \
+  --payload-kind agentTurn \
+  --payload-message "Read /path/to/workspace/memory/layer0/AGENT-PROMPT.md and execute Layer 0.5 signal routing." \
+  --payload-model "anthropic/claude-haiku-4-5" \
+  --payload-timeout 90
+```
+
+Or via JSON:
+
+```json
+{
+  "name": "Layer 0.5 Signal Router",
+  "schedule": {
+    "kind": "every",
+    "everyMs": 900000
+  },
+  "sessionTarget": "isolated",
+  "payload": {
     "kind": "agentTurn",
-    "message": "Read /data/.openclaw/workspace/memory/daily/$(TZ=America/Denver date +%Y-%m-%d).md and /data/.openclaw/workspace/memory/layer0/AGENT-PROMPT.md. Classify and route signals to memory buckets. See AGENT-PROMPT.md for routing map and quality rules."
-  }'
+    "message": "Read /path/to/workspace/memory/layer0/AGENT-PROMPT.md and execute Layer 0.5 signal routing.",
+    "model": "anthropic/claude-haiku-4-5",
+    "timeoutSeconds": 90
+  },
+  "delivery": {
+    "mode": "none"
+  }
+}
 ```
 
-## Step 5: Set Up GitHub Backup (Phase 7)
-
-### 5a. Generate SSH Key (if not existing)
-
+**Test:**
 ```bash
-ssh-keygen -t ed25519 -f /data/.openclaw/.ssh/id_ed25519 -N "" -C "openclaw-backup"
-cat /data/.openclaw/.ssh/id_ed25519.pub
+openclaw cron list  # find job ID
+openclaw cron run --job-id <id> --run-mode force
+openclaw cron runs --job-id <id>  # check results
 ```
 
-Add public key to GitHub:
-- Settings → SSH and GPG keys → New SSH key
-- Paste contents of `id_ed25519.pub`
+---
 
-### 5b. Configure Git Remote
+## Step 4: Verify Data Flow
 
-```bash
-cd /data/.openclaw/workspace
-git init
-git config user.email "shiva@example.com"
-git config user.name "Shiva Memory"
-git remote add origin git@github.com:YourUsername/memory-backup.git
-```
-
-### 5c. Create .gitignore
-
-```bash
-cat > /data/.openclaw/workspace/.gitignore << 'EOF'
-# Public git backup — only architecture, not identity
-# Private files excluded:
-
-# Identity & partnership
-# SOUL.md            — excluded, keep local
-# USER.md            — excluded, keep local
-# AGENTS.md          — excluded, keep local
-
-# Memory contents (private)
-memory/daily/       — excluded, keep local
-memory/self/        — excluded, keep local (personality)
-memory/lessons/     — excluded (tool-specific learnings)
-memory/projects/    — excluded, keep local (strategy, positions)
-memory/trading/     — excluded, keep local (financial data)
-
-# Config
-openclaw.json       — excluded, has API keys
-.env                — excluded
-
-# Only track architecture files:
-MEMORY.md (curated, anonymized)
-ai-selector.sh
-memory/index.md (structure only, no data)
-memory/layer0/AGENT-PROMPT.md (curated template)
-EOF
-```
-
-### 5d. Create Cron Job
-
-```bash
-openclaw cron add \
-  --name "GitHub Memory Snapshot" \
-  --schedule 'cron 0 2 * * * America/Denver' \
-  --payload '{
-    "kind": "systemEvent",
-    "text": "Run git add -A && git commit -m \"Daily snapshot $(date +%Y-%m-%d)\" && git push -u origin main in /data/.openclaw/workspace using SSH key /data/.openclaw/.ssh/id_ed25519"
-  }'
-```
-
-(Requires sysevent handler in gateway to execute git commands safely)
-
-Safer approach: Use a shell script in `/data/.openclaw/workspace/scripts/git-backup.sh`:
-
-```bash
-#!/bin/bash
-set -e
-cd /data/.openclaw/workspace
-export GIT_SSH_COMMAND="ssh -i /data/.openclaw/.ssh/id_ed25519 -o IdentitiesOnly=yes"
-git add -A
-git commit -m "Daily snapshot $(date +%Y-%m-%d)" || true
-git push -u origin main
-```
-
-Then cron:
-
-```bash
-openclaw cron add \
-  --name "GitHub Memory Snapshot" \
-  --schedule 'cron 0 2 * * * America/Denver' \
-  --payload '{
-    "kind": "systemEvent",
-    "text": "Execute /data/.openclaw/workspace/scripts/git-backup.sh"
-  }'
-```
-
-## Step 6: VPS Snapshots (Phase 7)
-
-If using Hostinger API:
-
-```bash
-openclaw cron add \
-  --name "VPS Snapshot" \
-  --schedule 'cron 0 3 * * * America/Denver' \
-  --payload '{
-    "kind": "systemEvent",
-    "text": "Create Hostinger VPS snapshot via API: POST /v1/virtual-machines/{id}/snapshot with auth header, 20-day retention policy"
-  }'
-```
-
-(Requires API token in env vars: `HOSTINGER_API_KEY`)
-
-## Step 7: Verify All Phases (Integration Test)
-
-1. **Phase 1 (LCM):** 
+1. **Generate activity** (send messages, use tools)
+2. **Wait 15 minutes** (or trigger Layer 0.5 manually)
+3. **Check daily log:**
    ```bash
-   ls -la ~/.openclaw/lcm.db
+   cat ~/.openclaw/workspace/memory/daily/$(date +%Y-%m-%d).md
+   ```
+4. **Check routed signals:**
+   ```bash
+   ls -lh ~/.openclaw/workspace/memory/{semantic,self,lessons,projects}/*.md
    ```
 
-2. **Phase 2 (Layer 1):**
-   ```bash
-   ls -la /data/.openclaw/workspace/memory/{semantic,self,lessons,projects}/
-   ```
+If signals are being classified and routed correctly, you're done with core Trident.
 
-3. **Phase 5 (Layer 0):**
-   ```bash
-   openclaw cron list | grep "Layer 0"
-   ```
+---
 
-4. **Phase 7 (Backups):**
-   ```bash
-   openclaw cron list | grep -E "GitHub|Snapshot"
-   cd /data/.openclaw/workspace && git log --oneline | head -5
-   ```
+## Optional: Semantic Recall (Advanced)
 
-## Step 8: Run Manual Test
+### Option A: Qdrant via Docker
 
-Trigger Layer 0 manually:
+**Create `docker-compose.yml`:**
 
-```bash
-openclaw cron run --jobId <layer0-job-id>
+```yaml
+version: '3.8'
+services:
+  qdrant:
+    image: qdrant/qdrant:latest
+    ports:
+      - "6333:6333"
+    volumes:
+      - ./qdrant_storage:/qdrant/storage
+    environment:
+      - QDRANT__SERVICE__GRPC_PORT=6334
 ```
 
-Check output:
-
+**Start:**
 ```bash
-cat /data/.openclaw/workspace/memory/daily/$(date +%Y-%m-%d).md
-cat /data/.openclaw/workspace/memory/layer0/last-run.md
+docker-compose up -d
 ```
 
-Verify signals were routed to appropriate buckets:
-
+**Verify:**
 ```bash
-grep -r "[lesson]" /data/.openclaw/workspace/memory/
-grep -r "[project]" /data/.openclaw/workspace/memory/
+curl http://localhost:6333/collections
 ```
 
-## Troubleshooting
+### Option B: Qdrant Cloud
 
-### LCM not capturing messages
-- Check: `plugins.entries.lossless-claw.enabled = true`
-- Verify DB path: `ls -la ~/.openclaw/lcm.db`
-- Restart gateway: `openclaw gateway restart`
+1. Create account at [qdrant.tech](https://qdrant.tech)
+2. Get API key + cluster URL
+3. Use in embedding script:
+   ```python
+   from qdrant_client import QdrantClient
+   client = QdrantClient(url="https://your-cluster.qdrant.io", api_key="your-key")
+   ```
 
-### Layer 0 not running
-- Check cron status: `openclaw cron list`
-- Manual trigger: `openclaw cron run --jobId <id>`
-- Check logs: `openclaw logs follow`
-- Verify model available: Haiku should be in fallbacks
+### Option C: FalkorDB (Entity Graphs)
 
-### GitHub push fails
-- SSH key permissions: `chmod 600 /data/.openclaw/.ssh/id_ed25519`
-- Test SSH: `ssh -i /data/.openclaw/.ssh/id_ed25519 git@github.com`
-- Verify remote: `cd /data/.openclaw/workspace && git remote -v`
+**Docker:**
+```yaml
+  falkordb:
+    image: falkordb/falkordb:latest
+    ports:
+      - "6379:6379"
+      - "3000:3000"
+    volumes:
+      - ./falkordb_data:/data
+```
 
-### VPS snapshots not created
-- Test API: `curl -H "Authorization: Bearer $HOSTINGER_API_KEY" https://api.hostinger.com/v1/virtual-machines/{id}`
-- Check endpoint: Hostinger API may have changed
-- Verify token: `echo $HOSTINGER_API_KEY`
+**Or use Redis with FalkorDB module:**
+```bash
+redis-server --loadmodule /path/to/falkordb.so
+```
+
+**Integration:** Use Graphiti MCP for automated entity extraction.
+
+---
+
+## Step 5: WAL Protocol (Write-Ahead Logging)
+
+### Rule
+
+Never rely on chat history as persistent storage. Write important facts **before** composing responses.
+
+### Pattern
+
+```markdown
+## Example: User corrects you
+
+User: "Actually my email is bob@example.com, not alice@example.com"
+
+**Before responding:**
+1. Read `memory/semantic/people.md`
+2. Find the incorrect entry
+3. Update it with `[updated YYYY-MM-DD]` tag
+4. Append correction note: `<!-- superseded YYYY-MM-DD: alice@example.com -->`
+5. **Then** respond to the user
+
+**Never:**
+- Acknowledge correction → forget to write → lose the fix
+```
+
+### Implementation
+
+Add to your agent's system prompt:
+
+```markdown
+## WAL Protocol (Write-Ahead Logging)
+
+Before any response composition:
+1. Scan the user message for corrections, decisions, preferences, or facts
+2. If detected → update relevant memory files **immediately**
+3. Then compose your response
+
+This prevents "blank spots" where critical context gets lost.
+```
+
+---
+
+## Step 6: Cost Tuning
+
+### Default (Recommended)
+
+- **Layer 0.5:** Claude Haiku, 15-min interval → ~$0.67/day
+- **LCM:** Haiku for summaries → ~$0.01/compaction
+- **Total:** ~$0.67/day
+
+### Budget Mode
+
+- **Layer 0.5:** 30-min interval → ~$0.33/day
+- **LCM:** Gemini Flash → ~$0.006/compaction
+- **Total:** ~$0.33/day
+
+### Free Mode (Local-Only)
+
+- **Layer 0.5:** Ollama (qwen2.5:7b or mistral:7b) → $0/day
+- **LCM:** Ollama → $0/day
+- **Total:** $0/day (requires local GPU or fast CPU)
+
+Refer to `references/cost-tuning.md` for model selection heuristics.
+
+---
+
+## Recovery Scenarios
+
+### Scenario 1: "Layer 0.5 stopped working"
+
+1. Check cron status:
+   ```bash
+   openclaw cron list
+   ```
+2. Check last run:
+   ```bash
+   openclaw cron runs --job-id <id> | head -20
+   ```
+3. If error → check AGENT-PROMPT.md path is correct
+4. Test manual run:
+   ```bash
+   openclaw cron run --job-id <id> --run-mode force
+   ```
+
+### Scenario 2: "Memory files are empty"
+
+1. Check WAL protocol is enabled (are you writing before responding?)
+2. Check Layer 0.5 routing rules in AGENT-PROMPT.md
+3. Manually run Layer 0.5 with `--run-mode force`
+4. Check `memory/daily/*.md` for raw logs
+
+### Scenario 3: "LCM database corrupted"
+
+1. Backup existing database:
+   ```bash
+   cp ~/.openclaw/lcm.db ~/.openclaw/lcm.db.backup
+   ```
+2. Delete corrupted database:
+   ```bash
+   rm ~/.openclaw/lcm.db
+   ```
+3. Restart OpenClaw gateway (will recreate clean database)
+4. Re-import from Layer 1 .md files if needed
+
+---
+
+## Next Steps
+
+1. **Run for a week** — let Layer 0.5 operate autonomously
+2. **Review `memory/self/`** — observe personality development
+3. **Add weekly reflection cron** — consolidate daily logs into `memory/reflections/weekly/*.md`
+4. **Optional: Deploy Qdrant** — enable semantic search over 100K+ messages
+5. **Optional: Git backup** — add daily Git push for version control
+
+---
+
+## Further Reading
+
+- `SKILL.md` — Core architecture overview
+- `cost-tuning.md` — Model selection and budget optimization
+- `../scripts/layer0-agent-prompt-template.md` — Customizable signal router prompt
+
+---
+
+**You now have a production-grade persistent memory system. Use it wisely.**
