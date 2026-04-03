@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  atlas:
+    image: node:22-slim
+    container_name: atlas
+    restart: unless-stopped
+    working_dir: /data/.openclaw
+    command: >
+      sh -c "
+        if [ ! -d /data/.npm-global ]; then
+          mkdir -p /data/.npm-global;
+        fi &&
+        npm config set prefix /data/.npm-global &&
+        if [ ! -f /data/.npm-global/bin/openclaw ]; then
+          npm install -g openclaw@latest;
+        fi &&
+        /data/.npm-global/bin/openclaw gateway start
+      "
+    volumes:
+      - atlas-data:/data/.openclaw
+      - atlas-npm:/data/.npm-global
+    networks:
+      - traefik-net
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.atlas.rule=Host(`atlas.clawofshiva.tech`)"
+      - "traefik.http.routers.atlas.entrypoints=websecure"
+      - "traefik.http.routers.atlas.tls=true"
+      - "traefik.http.routers.atlas.tls.certresolver=letsencrypt"
+      - "traefik.http.services.atlas.loadbalancer.server.port=3000"
+    environment:
+      - NODE_ENV=production
+      - OPENCLAW_WORKSPACE=/data/.openclaw/workspace
+
+volumes:
+  atlas-data:
+    driver: local
+  atlas-npm:
+    driver: local
+
+networks:
+  traefik-net:
+    external: true
