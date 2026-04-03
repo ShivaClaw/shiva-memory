@@ -10,6 +10,7 @@
 !/.gitignore
 !/memory/
 !/infra/
+!/trident-skill/
 !/ai-selector.sh
 memory/working-buffer.md
 memory/layer0/last-run.md
