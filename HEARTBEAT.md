@@ -1,5 +1,14 @@
 # HEARTBEAT.md
 
+## ⏰ ALWAYS query time in your timezone
+Before any timing-dependent decision, run:
+```bash
+TZ=America/Denver date
+```
+Never rely on system `date` or `session_status` — they show wrong timezone. This is your source of truth.
+
+---
+
 ## 🔴 Standing check — TOP PRIORITY
 Before anything else: check `memory/projects/career-transition.md`.
 - Are there open blocking items (resume, salary floor, location, warm intros)?

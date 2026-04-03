@@ -14,6 +14,7 @@ Get G employed before May 20, 2026 (Outlier AI shutdown). Target: higher-leverag
 - **Batch 1 (April 1–2):** ✅ COMPLETE — 5 companies targeted (Concentric, Impello, Tesoro, KBI Biopharma, Think Bioscience)
   - All sent via Gmail API through Maton oauth-gateway
   - Timestamps + email IDs logged in OUTREACH_LOG.md
+  - ⚠️ **[2026-04-02 21:29 UTC] Gmail OAuth token (gog/Maton) CONFIRMED REVOKED** — blocks job email monitoring. Status: awaiting re-authorization or fallback to himalaya (IMAP). No delay to Batch 2 if alternative confirmed working.
 - **Batch 2 (launch April 7):** 15 companies ready, targeting 3–5 additional sends before deadline
 - **Interview pipeline:** Open, monitoring for responses (expect 5–7 day lag)
 

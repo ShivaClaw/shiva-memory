@@ -11,3 +11,10 @@
 *   **Backtesting and simulation environments:** Designing and utilizing realistic simulation environments to rigorously test LLM-based trading strategies before deployment in live markets.
 
 **Initial thought:** The current macro environment, characterized by high geopolitical risk and commodity price volatility, presents a complex yet potentially rich training ground for LLMs in identifying and capitalizing on market movements. The challenge lies in translating qualitative geopolitical analysis into quantitative trading signals and executing them with precise risk controls.
+---
+
+### 2026-04-02 — Oil shock mechanics: why equities hate sudden energy spikes
+- **First-order effect:** higher oil is an immediate input-cost shock (transport, chemicals, agriculture). Margins compress unless pricing power is strong.
+- **Macro transmission:** energy spikes lift headline inflation → markets price stickier policy/rates → discount rates rise → long-duration assets (growth/NDX) derate.
+- **Credit channel:** higher fuel costs + uncertainty widen spreads and dampen capex. Risk parity / vol-targeting can mechanically de-risk.
+- **Tradeable implication (24–72h):** energy up; cyclicals/consumer discretionary down; high beta down harder; USD often bids if the shock is global-risk-off.

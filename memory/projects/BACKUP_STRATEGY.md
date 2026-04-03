@@ -31,13 +31,15 @@ Both layers are automated, encrypted where sensitive, and designed for rapid rec
 - **On-demand:** Triggered manually before major changes (updates, deployments)
 
 ### Cadence
-- Keep last 7 snapshots (rolling window)
-- Retention policy: 168 hours (7 days)
+- 1 snapshot per VM (Hostinger overwrites on each create)
+- Retention: 20 days from creation (confirmed from API response 2026-04-02; `expires_at` field)
+- Restore time: ~30 minutes (`restore_time: 1800` seconds from API)
 
 ### Implementation
 - **Cron:** `Hostinger VPS Snapshot (Daily)` — Claude Haiku + Hostinger API
 - **Job name:** Includes `HOSTINGER_API_TOKEN` reference from local `.enc` file
-- **API endpoint:** `https://api.hostinger.com/v1/vps/{vps_id}/snapshots`
+- **API endpoint:** `https://developers.hostinger.com/api/vps/v1/virtual-machines/{virtualMachineId}/snapshot` ✅ (corrected 2026-04-02; old URL caused HTTP 530)
+- **Note:** Hostinger keeps only 1 snapshot per VM — each new snapshot overwrites the previous
 - **Failure handling:** WhatsApp alert if snapshot fails; retry every 15 min for 2 hours
 
 ### Recovery Path
@@ -50,8 +52,8 @@ Both layers are automated, encrypted where sensitive, and designed for rapid rec
 ```
 
 ### Cost
-- Hostinger VPS plan includes 2 free snapshots; additional snapshots at $0.50–$1.00 each
-- 7-day rolling window = ~5 snapshots in use = ~$2.50/month
+- Hostinger VPS plan includes 2 free snapshots; additional at $0.50–$1.00 each
+- 1 snapshot per VM (overwrites) → minimal cost; 20-day retention window
 
 ---
 

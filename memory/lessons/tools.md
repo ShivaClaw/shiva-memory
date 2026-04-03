@@ -26,3 +26,6 @@
 - Mistral Small 3.2 correct model ID on OR: `mistralai/mistral-small-3.2-24b-instruct`
 - Free-tier OR models (step-3.5-flash:free) go rate-limited without warning — unreliable as last resort
 - gpt-5.2 requires `max_completion_tokens` not `max_tokens`
+- `gog gmail` can fail with `invalid_grant` when Google OAuth tokens expire/revoke; fix by re-authing the account (refresh token) before relying on cron automation
+- **[2026-04-02] Gmail OAuth token for `gog` tool currently revoked/expired.** Career-transition.md claims it's active but it's blocking job email monitoring via heartbeat. Requires re-authorization before next cron runs. Mismatch: career-transition.md status stale.
+- **[2026-04-02 21:29 UTC] OAuth token failure repeated.** Heartbeat logs consistent revocation issue. Status: awaiting re-auth via Maton oauth-gateway or alternative (himalaya IMAP).
