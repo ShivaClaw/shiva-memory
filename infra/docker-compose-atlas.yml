@@ -21,7 +21,7 @@ services:
       - atlas-data:/data/.openclaw
       - atlas-npm:/data/.npm-global
     networks:
-      - traefik-net
+      - traefik_proxy
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.atlas.rule=Host(`atlas.clawofshiva.tech`)"
@@ -40,5 +40,5 @@ volumes:
     driver: local
 
 networks:
-  traefik-net:
+  traefik_proxy:
     external: true
