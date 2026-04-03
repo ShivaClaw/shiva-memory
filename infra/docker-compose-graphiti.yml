@@ -93,10 +93,8 @@ services:
 volumes:
   graphiti_data:
     driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: /data/graphiti
+    # Standard Docker volume (Hostinger-managed, no bind mount required)
+    # Data persists in Docker's volume storage
 
 networks:
   traefik_proxy:
