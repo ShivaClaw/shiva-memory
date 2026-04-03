@@ -88,20 +88,33 @@ Background (every 15min):
 
 ---
 
-## What's Pending (Phase 8c)
+## ✅ Phase 8c Complete — Semantic Context Injection LIVE
 
-**Integration with lossless-claw:**
-1. lossless-claw needs a pre-expansion hook that:
-   - Reads latest file from `memory/layer0.5/`
-   - Extracts top 3 memories + markdown
-   - Injects into context before LCM expansion
-   
-2. Options:
-   - **Option A (plugin hook):** lossless-claw v0.5.2+ supports pre-expansion hooks
-   - **Option B (sidecar file reading):** lossless-claw reads staging files at context build time
-   - **Option C (manual dispatch):** Hook into OpenClaw's context pre-processing layer
+**Implementation:** Option D (inline into Layer 0 signal router)
+**Status:** OPERATIONAL as of 2026-04-03 01:33 EDT
 
-**Implementation:** G decides which approach; I can wire any of them.
+**How it works:**
+1. Layer 0.5 sidecar runs every 15 minutes → stages semantic recall to `memory/layer0.5/`
+2. Layer 0 cron calls `layer0-with-context.sh` wrapper before processing
+3. Wrapper reads latest staging file, injects context into AGENT-PROMPT.md
+4. Layer 0 runs with augmented prompt including semantic recall
+5. Signal routing becomes context-aware (priority boost for related signals)
+
+**Test results:**
+- Script executed successfully
+- 70% confidence semantic context injected
+- 5 relevant memories from Qdrant (memory_projects, memory_daily)
+- Output verified: augmented prompt includes full semantic recall markdown
+
+**Cost:**
+- Layer 0.5 sidecar: ~$0.02/day (unchanged)
+- Layer 0 token overhead: +300 tokens/run (~$0.0002/run)
+- Net daily increase: ~$0.03 → $0.05 (negligible)
+
+**Why Option D won:**
+- Option A blocked: lossless-claw v0.5.2 schema doesn't support `preExpansionHook`
+- Option C rejected: system event injection would clutter chat
+- Option D (inline): Cleanest, context-aware signal routing, no extra systems
 
 ---
 
