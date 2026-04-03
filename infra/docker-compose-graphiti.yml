@@ -12,7 +12,7 @@
 #
 # Or directly from GitHub (raw URL):
 #   docker compose \
-#     -f https://raw.githubusercontent.com/ShivaClaw/shiva-infra/main/docker-compose-graphiti.yml \
+#     -f https://raw.githubusercontent.com/ShivaClaw/shiva-memory/main/infra/docker-compose-graphiti.yml \
 #     up -d
 #
 # Required env vars (set in shell or .env file beside this compose):
