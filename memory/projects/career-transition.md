@@ -8,7 +8,7 @@ Get G employed before May 20, 2026 (Outlier AI shutdown). Target: higher-leverag
 ## Critical context
 - **Outlier AI shutdown:** May 20, 2026
 - **Financial situation:** Wife covering bills, zero personal runway
-- **Urgency level:** CRITICAL — no buffer, must execute with precision. *All blocking items for job search resolved as of March 27, 2026.*
+- **Urgency level:** CRITICAL — no buffer, must execute with precision. *All blocking items for job search resolved as of March 27, 2026, EXCEPT for email monitoring capability which is now a critical blocker.*
 
 ## Execution status [updated 2026-04-02]
 - **Batch 1 (April 1–2):** ✅ COMPLETE — 5 companies targeted (Concentric, Impello, Tesoro, KBI Biopharma, Think Bioscience)
@@ -87,13 +87,13 @@ Get G employed before May 20, 2026 (Outlier AI shutdown). Target: higher-leverag
 
 ---
 
-## Current state [updated 2026-04-03]
+## Current state [updated 2026-04-04]
 - Sectors researched and prioritized
 - Cold outreach template drafted
 - Prospect list built (40+ companies)
 - Batch 1 (5 companies) sent April 1–2 via Gmail API
-- **⚠️ CRITICAL BLOCKER [2026-04-02]:** Gmail OAuth token (Maton/gog) REVOKED. Blocks email monitoring for responses. Status: requires re-auth or fallback to himalaya (IMAP).
-- **Action needed:** Restore email monitoring capability before Batch 2 (scheduled April 7).
+- **⚠️ CRITICAL BLOCKER [2026-04-04 05:45 UTC]:** Gmail OAuth token (Maton/gog) REVOKED. Blocks email monitoring for responses. Fallback available: `himalaya` IMAP skill (fully operational).
+- **Action needed:** Migrate to `himalaya` IMAP monitoring before Batch 2 (scheduled April 7).
 
 ## Next steps
 - **URGENT:** Remediate Gmail monitoring (re-auth Maton or switch to himalaya IMAP).

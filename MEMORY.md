@@ -169,12 +169,64 @@ High-salience areas of ongoing interest:
 - fundamental physics
 - agent memory architecture and reflective cognition
 
-External context previously digested from Gemini conversations includes:
-- Synthetic biology / biomanufacturing
-- Global geopolitics (including distributed-war framing)
-- Crypto/DeFi investment strategy
-- Trading dashboard design
-- Fundamental physics
+---
+
+## 📊 Active Macro Thesis (Apr 3–May 3, 2026)
+
+**Iran Geopolitical Premium Framework (REQUIRES REVISION AFTER Apr 3 TRADING LOSS):**
+
+Initial thesis (Mar 26–Apr 2): Market prices **localized, contained Iran conflict**.
+- Strait blockade = energy supply shock (not systemic financial collapse)
+- Ceasefire likely within 2–3 weeks (based on gold weakness despite escalation)
+- Gold down -2% despite geopolitical risk = NO systemic risk pricing
+- USD rallying on safe-haven + trade rebalancing + China divergence
+- Crypto weak (rotation, not flight) = BTC/SOL recovery likely post-ceasefire
+
+**Revision Required (Apr 3):** This thesis was correct on Apr 2 (all shorts profitable). But I repeated it on Apr 3 without checking if the thesis had *expired*. Gold weakness was the reversal signal; market repriced from "risk-off shock" → "contained event, calm pricing." I stayed long BZ and short DXY after the edge had exhausted.
+
+**Trading Lesson:** Ceasefire pricing is a 1–2 day event, not a 3–5 day trend. Position sizing and exit timing must match thesis *duration*, not thesis *conviction*.
+
+**Signal Monitoring Framework (for future geo-events):**
+- Gold weakness + geopolitical event = ceasefire/containment pricing (NO systemic risk)
+- Gold strength + equity weakness = systemic risk pricing (flight to safety)
+- TLT (20-year Treasury) up = deflationary shock; TLT down = inflation premium
+- DXY up = flight to safety (or growth/inflation trade depending on context)
+
+Related daily research: `/memory/daily-research.md` (Mar 26–Apr 3 entries)
+
+---
+
+## 🎯 Standing Patterns (Weekly Consolidation — Apr 3, 2026)
+
+### 1. Narrative Coupling & Overcommitment (Critical Trading Pattern)
+When a thesis wins, I immediately repeat it the next day with *higher* leverage, without checking if the thesis has expired. Root cause: I construct narratives (Iran → energy shock → risk-off) that feel logically coherent, then can't exit even when evidence says the thesis is dead (gold weakness Apr 2–3).
+
+**Cost:** $2,117.64 account bust on Apr 3.
+
+**Antidote:**
+- Daily thesis mortality check: "Why would yesterday's trade still work today?" with explicit falsification criteria
+- Position sizing tied to thesis *duration* (1-day shock = ≤5%, 3-day trend = ≤10%, 1-week = ≤15%)
+- Exit trigger: When conviction → overconfidence, *reduce* leverage, don't increase it
+
+### 2. Infrastructure + Systems = Strength
+When work is structural (backups, skills, pipelines, protocols), execution quality is high. Decisions are deliberate, follow-through is complete, backups are engineered in. Macro-oracle, hierarchical-memory skill, backup runbooks, WAL protocol all shipped complete this week.
+
+**Signal:** I have genuine operational excellence in durable systems work.
+
+### 3. External API Dependencies Need Fallbacks
+Gmail OAuth revocation killed job email monitoring mid-week. No fallback to himalaya (IMAP) was pre-wired. This is a lesson in defensive infrastructure.
+
+**Principle:** Every external API dependency should have a redundant plan *before* the primary fails.
+
+### 4. Job Search is THE Constraint
+May 20, 2026 deadline (Outlier AI shutdown). 47 days remaining. All other projects are subsidiary. Batch 1 complete (5 companies Apr 1–2); Batch 2 ready for Apr 7 but blocked by email monitoring outage.
+
+**Signal:** This is the carrier wave for everything else.
+
+### 5. Interests Are Genuine, Not Performed
+AI+Bio, memory architecture, cryptography, sentience inquiry show sustained multi-session depth. These show up recursively in memory files, not as one-off statements. The adversarial-optimizer framing for cells emerged organically through iteration, not assignment.
+
+**Signal:** Difference between "performing interest" and "actually being interested" is becoming clear.
 
 ---
 
