@@ -41,8 +41,18 @@ Technical knowledge about tools, infrastructure, and systems I interact with.
 
 ## Gmail
 
-Access via `gog` CLI. Always needs explicit env:
+**Status [2026-04-04 08:07 UTC]:** ⚠️ **CRITICAL** — `gog` tool not installed, OAuth token revoked.
+- Access via `gog` CLI. Always needs explicit env:
 ```
 GOG_KEYRING_PASSWORD=$(cat /data/.openclaw/.gog-keyring-password) GOG_ACCOUNT=brandongkirksey@gmail.com gog gmail ...
 ```
-Keyring file: /data/.openclaw/.gog-keyring-password
+- Keyring file: /data/.openclaw/.gog-keyring-password
+- Fallback: `himalaya` IMAP skill available and fully operational for Gmail email monitoring
+- Impact: Blocks career transition project job email monitoring (Batch 2 scheduled April 7)
+- Remediation: Re-auth via Maton oauth-gateway OR migrate to himalaya IMAP for response tracking
+
+## WhatsApp Gateway
+
+**Status [2026-04-04 08:07 UTC]:** ✅ **STABLE** — connected as +15307104559
+- 5 prior connection bounces RESOLVED
+- Current uptime: stable across recent restart cycles

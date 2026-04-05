@@ -87,13 +87,14 @@ Get G employed before May 20, 2026 (Outlier AI shutdown). Target: higher-leverag
 
 ---
 
-## Current state [updated 2026-04-04]
+## Current state [updated 2026-04-04 08:07 UTC]
 - Sectors researched and prioritized
 - Cold outreach template drafted
 - Prospect list built (40+ companies)
 - Batch 1 (5 companies) sent April 1–2 via Gmail API
-- **⚠️ CRITICAL BLOCKER [2026-04-04 05:45 UTC]:** Gmail OAuth token (Maton/gog) REVOKED. Blocks email monitoring for responses. Fallback available: `himalaya` IMAP skill (fully operational).
-- **Action needed:** Migrate to `himalaya` IMAP monitoring before Batch 2 (scheduled April 7).
+- **⚠️ CRITICAL BLOCKER [updated 2026-04-04 14:52 UTC]:** Gmail OAuth token (Maton/gog) REVOKED. Job email monitoring BLOCKED. Migration to `himalaya` IMAP skill is urgent before Batch 2 (April 7).
+- **Action needed:** Switch all job monitoring to `himalaya` IMAP. Confirm working before outreach resumes.
+- **Confirmation [2026-04-04 14:52 UTC]:** Career transition job tracking currently non-functional. Blocker acknowledged in Layer 0 sweep.
 
 ## Next steps
 - **URGENT:** Remediate Gmail monitoring (re-auth Maton or switch to himalaya IMAP).

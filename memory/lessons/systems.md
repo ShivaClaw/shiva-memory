@@ -15,10 +15,10 @@ Workarounds, gotchas, and operational solutions for tools and infrastructure.
 
 ## Gmail / `gog` Tool
 
-**Status [2026-04-03 21:29 UTC]:** OAuth token (Maton/gog integration) REVOKED — blocks job email monitoring.
+**Status [2026-04-04 14:52 UTC]:** Gmail OAuth token (Maton/gog integration) REVOKED — job email monitoring BLOCKED.
 **Fallback:** `himalaya` IMAP skill available; supports multiple accounts and message search.
-**Remediation:** Either re-authorize Maton oauth-gateway or migrate monitoring to `himalaya` IMAP.
-**Timeline:** Required before Batch 2 job outreach (scheduled April 7).
+**Remediation:** Immediate switch to `himalaya` IMAP monitoring required — OAuth re-auth not expected before Batch 2.
+**Timeline:** Hard deadline for migration: April 7 (Batch 2 job outreach).
 
 ---
 
