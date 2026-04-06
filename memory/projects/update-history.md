@@ -22,6 +22,15 @@ _Updates logged by weekly cron (Sundays 03:00 MDT)._
 
 ---
 
+## 2026-04-05 — v2026.3.24 → v2026.4.2
+
+- Type: Minor (breaking plugin config paths)
+- Decision: Breaking but adaptable — safe to install with config migration
+- Reasoning: Two breaking changes (xAI + Firecrawl config paths) but automated fix available via `openclaw doctor --fix`. Our setup uses neither xAI nor Firecrawl; only lossless-claw plugin affected. lossless-claw v0.5.2 remains compatible. Security hardening + task flow restoration are beneficial. No blockers detected.
+- Action taken: Delivered recommendation for immediate install with rollback plan
+
+---
+
 ## 2026-04-02 — Cron Created
 
 - **Current version:** 2026.3.23-2
